@@ -20,9 +20,9 @@ public class ApiService {
 
     private final HttpEntity entity;
 
-    public PageRequest getPageRequest(){
+    public PageRequest getPageRequest(Integer page){
 
-        String url = "https://mangaverse-api.p.rapidapi.com/manga/fetch?page=3&genres=Fantasy&nsfw=false&type=all";
+        String url = "https://mangaverse-api.p.rapidapi.com/manga/fetch?page="+ page +"&genres=Fantasy&nsfw=false&type=all";
         ResponseEntity<PageRequest> response = restTemplate.exchange(url, HttpMethod.GET, entity, PageRequest.class);
 
         System.out.println(response.getBody().getData().size());

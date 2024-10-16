@@ -3,9 +3,7 @@ package web.fletcher.fletcherdata.rest;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import web.fletcher.fletcherdata.service.FirestoreService;
 
 import java.util.concurrent.ExecutionException;
@@ -18,8 +16,18 @@ public class PageRequestRest {
     @Autowired
     private FirestoreService firestoreService;
 
-    @GetMapping("/preencher")
-    public void preencheFireStore() throws ExecutionException, InterruptedException {
-        firestoreService.addInformation();
+    @GetMapping("/preencher/{page}")
+    public void preencheFireStore(@PathVariable Integer page) throws ExecutionException, InterruptedException {
+        firestoreService.addInformation(page);
+    }
+
+    @DeleteMapping("/deletar-todos")
+    public void deletarTodos(){
+        firestoreService.deleteAll();
+    }
+
+    @GetMapping("/create-collection")
+    public void createCollection() throws ExecutionException, InterruptedException {
+        firestoreService.createCollection();
     }
 }

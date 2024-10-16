@@ -29,7 +29,7 @@ public class MangaInformation {
 
     private Integer total_chapter;
 
-    private Long created_at;
+    private Long create_at;
 
     private Long update_at;
 
