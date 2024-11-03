@@ -6,8 +6,8 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Data
-public class PageRequest {
+public class PageRequest<T> {
     private BigInteger code;
 
-    private List<MangaInformation> data;
+    private List<T> data;
 }

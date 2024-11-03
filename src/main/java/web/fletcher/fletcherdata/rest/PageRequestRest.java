@@ -1,6 +1,5 @@
 package web.fletcher.fletcherdata.rest;
 
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +9,7 @@ import java.util.concurrent.ExecutionException;
 
 @RestController
 //@AllArgsConstructor
-@RequestMapping("/preenche-firestore")
+@RequestMapping("/manga")
 public class PageRequestRest {
 
     @Autowired
@@ -26,8 +25,13 @@ public class PageRequestRest {
         firestoreService.deleteAll();
     }
 
-    @GetMapping("/create-collection")
-    public void createCollection() throws ExecutionException, InterruptedException {
-        firestoreService.createCollection();
+    @GetMapping
+    public ResponseEntity<?> findAll() throws ExecutionException, InterruptedException {
+        return ResponseEntity.ok(firestoreService.findAll());
+    }
+
+    @GetMapping("fill-chapter/{mangaId}/{mangaChapter}")
+    public void fillChapter(@PathVariable String mangaId, @PathVariable String mangaChapter){
+        firestoreService.getImages(mangaId, mangaChapter);
     }
 }
