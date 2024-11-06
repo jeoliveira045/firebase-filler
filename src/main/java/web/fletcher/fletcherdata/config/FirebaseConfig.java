@@ -19,7 +19,7 @@ import java.io.InputStream;
 @Configuration
 public class FirebaseConfig {
 
-    @Value("classpath:/firebase/mangaverse-1c87c-firebase-adminsdk-97vfu-d643c40511.json")
+    @Value("classpath:/firebase/mangaverse-api-11ea6-firebase-adminsdk-1kl7l-93cad4a2fa.json")
     private Resource privateKey;
 
     @Bean

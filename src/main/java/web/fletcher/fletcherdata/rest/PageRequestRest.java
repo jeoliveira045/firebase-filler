@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import web.fletcher.fletcherdata.service.FirestoreService;
 
+import java.net.URISyntaxException;
 import java.util.concurrent.ExecutionException;
 
 @RestController
@@ -30,8 +31,13 @@ public class PageRequestRest {
         return ResponseEntity.ok(firestoreService.findAll());
     }
 
-    @GetMapping("fill-chapter/{mangaId}/{mangaChapter}")
-    public void fillChapter(@PathVariable String mangaId, @PathVariable String mangaChapter){
-        firestoreService.getImages(mangaId, mangaChapter);
+    @GetMapping("fill-chapter/{mangaId}")
+    public void fillChapter(@PathVariable String mangaId){
+        firestoreService.getChapters(mangaId);
+    }
+
+    @GetMapping("fill-chapter/{mangaId}/{chapterId}")
+    public void fillChapter(@PathVariable String mangaId, @PathVariable String chapterId) throws URISyntaxException {
+        firestoreService.getImages(mangaId,chapterId);
     }
 }

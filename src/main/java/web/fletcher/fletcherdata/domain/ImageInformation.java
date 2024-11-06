@@ -10,7 +10,7 @@ public class ImageInformation {
 
     private String chapter;
 
-    private String link ;
+    private String link;
 
     private Integer index;
 }

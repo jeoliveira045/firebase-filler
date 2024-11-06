@@ -7,7 +7,9 @@ import com.google.cloud.firestore.QuerySnapshot;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import web.fletcher.fletcherdata.domain.ChapterInformation;
 import web.fletcher.fletcherdata.domain.MangaInformation;
+import web.fletcher.fletcherdata.domain.dto.MangaInformationDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +32,15 @@ public class MangaService {
         return mangaInformationList;
     }
 
-    public MangaInformation findById(String mangaId) throws ExecutionException, InterruptedException {
-        return db.collection("manga-group").document(mangaId).get().get().toObject(MangaInformation.class);
+    public MangaInformationDTO findById(String mangaId) throws ExecutionException, InterruptedException {
+        MangaInformationDTO mangaInformationDTO = db.collection("manga-group").document(mangaId).get().get().toObject(MangaInformationDTO.class);
+
+        db.collection("manga-group").document(mangaId).collection("chapters").get().get().getDocuments().forEach(queryDocumentSnapshot -> {
+            assert mangaInformationDTO != null;
+            mangaInformationDTO.getChapterInformationList().add(queryDocumentSnapshot.toObject(ChapterInformation.class));
+        });
+
+        return mangaInformationDTO;
     }
 
 }

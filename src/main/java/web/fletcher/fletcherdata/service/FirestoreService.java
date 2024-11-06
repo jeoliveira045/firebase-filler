@@ -9,6 +9,7 @@ import web.fletcher.fletcherdata.domain.ImageInformation;
 import web.fletcher.fletcherdata.domain.MangaInformation;
 import web.fletcher.fletcherdata.domain.PageRequest;
 
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 @Service
@@ -26,7 +27,7 @@ public class FirestoreService {
 
         mangaRequest.getData().forEach(document -> {
             docRef.document(document.getId()).set(document);
-//            this.getChapters(document.getId());
+            this.getChapters(document.getId());
         });
     }
 
@@ -37,17 +38,17 @@ public class FirestoreService {
 
         chaptersRequest.getData().forEach(chapterInformation -> {
             docRef.document(mangaId).collection("chapters").document(chapterInformation.getId()).set(chapterInformation);
-            getImages(mangaId, chapterInformation.getId());
+//            getImages(mangaId, chapterInformation.getId());
         });
     }
 
-    public void getImages(String mangaId, String chapterId){
+    public void getImages(String mangaId, String chapterId) throws URISyntaxException {
         CollectionReference docRef = db.collection("manga-group");
 
         PageRequest<ImageInformation> imagesRequest = apiService.getImages(chapterId);
 
         imagesRequest.getData().forEach(imageInformation -> {
-            docRef.document(mangaId).collection("chapters").document(chapterId).collection("images").document(imageInformation.getId()).set(imageInformation);
+            docRef.document(mangaId).collection("chapters").document(chapterId).collection("images").document(imageInformation.getIndex().toString()).set(imageInformation);
         });
     }
 

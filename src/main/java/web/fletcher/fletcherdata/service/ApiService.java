@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -13,9 +14,17 @@ import web.fletcher.fletcherdata.domain.ChapterInformation;
 import web.fletcher.fletcherdata.domain.ImageInformation;
 import web.fletcher.fletcherdata.domain.MangaInformation;
 import web.fletcher.fletcherdata.domain.PageRequest;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.NameValuePair;
 
+import java.io.File;
 import java.lang.reflect.ParameterizedType;
+import java.net.URISyntaxException;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -50,10 +59,31 @@ public class ApiService {
         return response.getBody();
     }
 
-    public PageRequest<ImageInformation> getImages(String chapterId){
+    public PageRequest<ImageInformation> getImages(String chapterId) throws URISyntaxException {
         String url = "https://mangaverse-api.p.rapidapi.com/manga/image?id=" + chapterId;
         ResponseEntity<PageRequest<ImageInformation>> response = restTemplate.exchange(url, HttpMethod.GET, entity, new ParameterizedTypeReference<PageRequest<ImageInformation>>(){});
-        System.out.println(response.getBody().getData().size());
+
+        response.getBody().getData().forEach(imageInformation -> {
+            String originalImageLink = imageInformation.getLink();
+
+            try {
+                URIBuilder uriBuilder = new URIBuilder(originalImageLink);
+                Map<String, String> params = uriBuilder.getQueryParams().stream().collect(Collectors.toMap(NameValuePair::getName, NameValuePair::getValue));
+                String imageLink = "https://" + uriBuilder.getHost() + uriBuilder.getPath();
+                ResponseEntity<byte[]> imageBase64 = restTemplate.exchange(imageLink, HttpMethod.GET, entity, new ParameterizedTypeReference<byte[]>() {}, params);
+                if (response.getStatusCode() == HttpStatus.OK) {
+                    byte[] imageBytes = imageBase64.getBody();
+
+                    // Converte os bytes da imagem para uma string Base64
+                    imageInformation.setLink(Base64.getEncoder().encodeToString(imageBytes));
+                } else {
+                    throw new RuntimeException("Falha ao obter a imagem. Código de resposta: " + response.getStatusCode());
+                };
+            } catch (URISyntaxException e) {
+                throw new RuntimeException(e);
+            }
+
+        });
         return response.getBody();
     }
 }
